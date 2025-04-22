@@ -1,0 +1,196 @@
+<html>
+<head>
+    <title></title>
+</head>
+<body onload="showdata()">
+    <div id="header">Users List App</div>
+    <div style="text-align :right; padding:10px;">
+        <button onclick="showpopup()">Add New User</button>
+    </div>
+
+    <div id="popup">
+        <button id="cross" onclick="showpopup()">X</button>
+        <h3>Add New User</h3>
+        <input type="text" id="name" placeholder="username" class="inputs"><br>
+        <input type="text" id="email" placeholder="email" class="inputs"><br>
+        <input type="text" id="contact" name="contact" placeholder="contact" class="inputs"><br>
+        <button onclick="fun()">Add</button>
+    </div>
+
+    <div id="popupedit">
+        <button id="crossedit" onclick="showpopupedit()">X</button>
+        <h3>Edit User</h3>
+        <input type="text" id="name_edit" placeholder="username" class="inputs"><br>
+        <input type="text" id="email_edit" placeholder="email" class="inputs"><br>
+        <input type="text" id="contact_edit" name="contact" placeholder="contact" class="inputs"><br>
+        <button onclick="fun_update()">Update</button>
+    </div>
+
+    <h1>Users list</h1>
+    <div id="wrapper"></div>
+</body>
+</html>
+
+<script>
+let users = [];
+let flag = 0;
+let selectedIndex = -1;
+let perpage = 2;
+let currentpage = 1;
+
+function fun() {
+    let u = document.getElementById("name").value;
+    let e = document.getElementById("email").value;
+    let c = document.getElementById("contact").value;
+
+    let obj = { 'username': u, 'email': e, 'contact': c };
+
+    users.push(obj);
+    showpopup();
+
+    document.getElementById("name").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("contact").value = "";
+
+    showdata();
+}
+
+function showdata() {
+    let temp = '<table>';
+    temp += '<tr>';
+    temp += '<td> NAME </td>';
+    temp += '<td> EMAIL </td>';
+    temp += '<td> CONTACT </td>';
+    temp += '<td> ACTION </td>';
+    temp += '<td> EDIT </td>';
+    temp += '</tr>';
+
+    const startindex = perpage * (currentpage - 1);
+    const endindex = perpage * currentpage;
+    const userstodisplay = users.slice(startindex, endindex);
+
+    userstodisplay.forEach((user, index) => {
+        const realIndex = startindex + index;
+        temp += '<tr>';
+        temp += '<td>' + user.username + '</td>';
+        temp += '<td>' + user.email + '</td>';
+        temp += '<td>' + user.contact + '</td>';
+        temp += `<td><button onclick='deleteit(${realIndex})'> delete </button></td>`;
+        temp += `<td><button onclick='editit(${realIndex})'> edit </button></td>`;
+        temp += '</tr>';
+    });
+
+    temp += '</table>';
+
+    const numberofpages = Math.ceil(users.length / perpage);
+    temp += '<div style="text-align:center; margin-top:10px;">';
+    for (let i = 1; i <= numberofpages; i++) {
+        temp += `<button onclick="next(${i})">${i}</button> `;
+    }
+    temp += '</div>';
+
+    document.getElementById("wrapper").innerHTML = temp;
+}
+
+function deleteit(index) {
+    users.splice(index, 1);
+    showdata();
+}
+
+function showpopup() {
+    if (flag == 0) {
+        document.getElementById("popup").style.visibility = 'visible';
+        flag = 1;
+    } else {
+        document.getElementById("popup").style.visibility = 'hidden';
+        flag = 0;
+    }
+}
+
+function editit(index) {
+    selectedIndex = index;
+    document.getElementById("popupedit").style.visibility = 'visible';
+    document.getElementById("name_edit").value = users[index].username;
+    document.getElementById("email_edit").value = users[index].email;
+    document.getElementById("contact_edit").value = users[index].contact;
+}
+
+function fun_update() {
+    let u = document.getElementById("name_edit").value;
+    let e = document.getElementById("email_edit").value;
+    let c = document.getElementById("contact_edit").value;
+    let obj = { 'username': u, 'email': e, 'contact': c };
+    users.splice(selectedIndex, 1, obj);
+    showdata();
+    document.getElementById("popupedit").style.visibility = 'hidden';
+}
+
+function next(pageno) {
+    currentpage = pageno;
+    showdata();
+}
+</script>
+
+<style>
+* {
+    margin: 0px;
+    padding: 0px;
+}
+body {
+    background-color: sandybrown;
+}
+#popup {
+    background-color: #ed6738;
+    padding: 20px;
+    position: absolute;
+    top: 10px;
+    left: 40%;
+    visibility: hidden;
+}
+#popupedit {
+    background-color: #ed6738;
+    padding: 20px;
+    position: absolute;
+    top: 10px;
+    left: 40%;
+    visibility: hidden;
+}
+#header {
+    background-color: black;
+    color: #dfff00;
+    padding: 15px;
+    font-size: 30px;
+}
+h1 {
+    text-align: center;
+    padding: 10px;
+    font-size: 26px;
+    background-color: #dfff00;
+}
+#cross {
+    margin-left: 100px;
+}
+#crossedit {
+    margin-left: 100px;
+}
+#popup > .inputs,
+#popupedit > .inputs {
+    padding: 10px;
+    margin: 20px;
+}
+table {
+    width: 80%;
+    padding: 30px;
+    margin-left: 100px;
+}
+td,
+th {
+    border: 1px solid black;
+    padding: 20px;
+    text-align: center;
+}
+button {
+    background-color: black;
+    color: #dfff00;
+}
+</style>
